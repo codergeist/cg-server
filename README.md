@@ -7,11 +7,11 @@ Docker configuration of the main server setup.
 Let's say you have a Next.js project setup, and you want to utilize this server setup. Add this repository as a submodule to your project.
 
 ```
-nextjs-demo/            # <-- Your Next.js project
-├── .docker/            # <-- This repository as a submodule in your project
+nextjs-demo/                # <-- Your Next.js project
+├── .docker/                # <-- This repository as a submodule in your project
     ├── db-data/
     ├── public/
-    ├── .env
+    ├── .env                # <-- default variables
     ├── docker-compose.yml
     └── docker-wrapper
 ├── pages/
@@ -20,7 +20,7 @@ nextjs-demo/            # <-- Your Next.js project
     ├── sql/                # <-- SQL files under this folder will be 
         ├── 00-create.sql   #     executed in order on the database
         ├── 01-seed.sql
-├── .env
+├── .env                    # <-- overwrites the default variables
 └── ...
 ```
 
@@ -42,4 +42,15 @@ If you need to recreate the database for any reason you can run each command sep
 
 ```bash
 ./.docker/docker-wrapper <project-name> mariadb 'mysql -uroot -p\"$MARIADB_ROOT_PASSWORD\"' < ./src/sql/00-create.sql
+```
+
+## Default database
+
+You can change the environment variables in the project's `.env` file. The default values are:
+
+```bash
+MARIADB_DATABASE=project
+MARIADB_USER=project
+MARIADB_PASSWORD=secret
+MARIADB_ROOT_PASSWORD=secret
 ```
