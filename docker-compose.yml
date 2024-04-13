@@ -43,6 +43,19 @@ services:
       MARIADB_PASSWORD: "${MARIADB_PASSWORD:-secret}"
       MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD:-secret}"
 
+  phpmyadmin:
+    image: phpmyadmin:5.2.1-apache
+    restart: always
+    ports:
+      - 8888:80
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_PORT=3306
+      - PMA_USER=${MARIADB_USER:-project}
+      - PMA_PASSWORD=${MARIADB_PASSWORD:-secret}
+    depends_on:
+      - mariadb
+
 volumes:
   db-data:
     driver: local
