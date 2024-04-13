@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.21.5-alpine
+    restart: 'no'
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./public:/usr/share/nginx/html
+    depends_on:
+      - nodejs
+    links:
+      - nodejs
+
+  nodejs:
+    image: node:gallium-alpine3.14
+    restart: 'no'
+    expose:
+      - 9000
+    depends_on:
+      - mariadb
+    ports:
+      - 8080:8080
+
+  mariadb:
+    image: mariadb:10.6.5-focal
+    restart: 'no'
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./../src/sql:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    environment:
+      # Compose uses the variable values from the shell environment in which
+      # docker-compose is run, or falls back to to the value set after `:-`
+      MARIADB_DATABASE: "${MARIADB_DATABASE:-project}"
+      MARIADB_USER: "${MARIADB_USER:-project}"
+      MARIADB_PASSWORD: "${MARIADB_PASSWORD:-secret}"
+      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD:-secret}"
+
+volumes:
+  db-data:
+    driver: local

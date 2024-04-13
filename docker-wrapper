@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Execute either docker compose commands or sh commands inside of a container,
+# using the project configuration files and  environment
+#
+# Usage:
+# ./docker-wrapper <project-name> [up|down|ps]
+# ./docker-wrapper <project-name> <service-name> 'echo "foo bar baz"'
+#
+# Example:
+# ./docker-wrapper countdown up
+# ./docker-wrapper countdown mariadb 'echo "foo bar baz"'
+
+# Directory for this script
+dockerDir="$(cd "$(dirname "$0")" || exit 1; pwd -P)"
+dockerComposeFilename=docker-compose.yml
+dockerComposeFile="${dockerDir}/${dockerComposeFilename}"
+
+envFilename=.env
+# The .env file included with this repository (docker-infrastructure)
+defaultEnvFile="./${envFilename}"
+# The .env file of the project that uses this repository as git submodule
+projectEnvFile="../${envFilename}"
+# Empty variable declaration used to host the full path to tne .env file
+envFile=
+
+projectName=${1}
+serviceName=${2}
+shCommand=${3}
+
+# If there aren't at least 2 args, the project name was not included
+[[ -z "${2}" ]] && printf "%b\n" "ERR: Use the project name as first argument" \
+  && exit 1
+
+# Change working directory to .docker
+cd "${dockerDir}" || exit 1
+
+# Check if the project has an .env file
+if [[ -f "${projectEnvFile}" ]]; then
+  # Docker compose will use the project .env file
+  envFile=${dockerDir%/.docker}/${projectEnvFile#../*}
+  printf "%b\n" "Using project .env file"
+
+else
+  # Check if there's a default docker .env file
+  if [[ -f "${defaultEnvFile}" ]]; then
+    # Docker compose will use the default .env file
+    envFile="${dockerDir}/${defaultEnvFile#./*}"
+    printf "%b\n" "WARN: No project .env file found, falling back to default"
+
+  else
+    # Warn if there are no .env files at all
+    printf "%b\n" "ERR: No project nor default .env file found" \
+      "This script will use the environment set in ${dockerComposeFilename}"
+  fi
+fi
+
+# Source the .env file if exists
+# The line below is used by shellcheck - a bash linter - don't remove it!
+# shellcheck disable=all
+[[ -f "${envFile}" ]] && source "${envFile}"
+# shellcheck enable=all
+
+# Print the full path to the files being used
+printf "%b\n" "${envFilename} = ${envFile}" \
+  "${dockerComposeFilename} = ${dockerComposeFile}"
+
+# The defult command to be executed inside of a container using sh...
+dockerCommand=( "exec" "-T" "${serviceName}" "sh" "-c" "exec ${shCommand}" )
+
+# ...unless one (and only one) of these keywords are used after the project name
+case "${serviceName}" in
+  up) dockerCommand=( "up" "--build" "--detach" );;
+  down) dockerCommand=( "down" "--volumes" );;
+  ps) dockerCommand=( "ps" "--all" );;
+esac
+
+docker-compose \
+  --project-name "${projectName}" \
+  --env-file "${envFile}" \
+  --file "${dockerComposeFile}" \
+  "${dockerCommand[@]}" || exit 1
+
+exit 0
