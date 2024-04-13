@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nginx:
-    image: nginx:1.21.5-alpine
+    image: nginx:1.24.0-alpine
     restart: 'no'
     ports:
       - 80:80
@@ -15,7 +15,7 @@ services:
       - nodejs
 
   nodejs:
-    image: node:gallium-alpine3.14
+    image: node:21-alpine
     restart: 'no'
     expose:
       - 9000
@@ -25,7 +25,7 @@ services:
       - 8080:8080
 
   mariadb:
-    image: mariadb:10.6.5-focal
+    image: mariadb:10.6.17-focal
     restart: 'no'
     command: --default-authentication-plugin=mysql_native_password
     volumes:
