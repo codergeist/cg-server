@@ -14,6 +14,11 @@ services:
       - ./../src/sql:/docker-entrypoint-initdb.d
     ports:
       - ${MARIADB_PORT}:${MARIADB_PORT}
+    environment:
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
     expose:
       - ${MARIADB_PORT}
 
