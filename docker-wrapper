@@ -8,8 +8,8 @@
 # ./docker-wrapper <project-name> <service-name> 'echo "foo bar baz"'
 #
 # Example:
-# ./docker-wrapper countdown up
-# ./docker-wrapper countdown mariadb 'echo "foo bar baz"'
+# ./docker-wrapper cg-server up
+# ./docker-wrapper cg-server mariadb 'echo "foo bar baz"'
 
 # Directory for this script
 dockerDir="$(cd "$(dirname "$0")" || exit 1; pwd -P)"
@@ -57,15 +57,14 @@ fi
 
 # Source the .env file if exists
 # The line below is used by shellcheck - a bash linter - don't remove it!
-# shellcheck disable=all
+# shellcheck disable=SC1090
 [[ -f "${envFile}" ]] && source "${envFile}"
-# shellcheck enable=all
 
 # Print the full path to the files being used
 printf "%b\n" "${envFilename} = ${envFile}" \
   "${dockerComposeFilename} = ${dockerComposeFile}"
 
-# The defult command to be executed inside of a container using sh...
+# The default command to be executed inside of a container using sh...
 dockerCommand=( "exec" "-T" "${serviceName}" "sh" "-c" "exec ${shCommand}" )
 
 # ...unless one (and only one) of these keywords are used after the project name
