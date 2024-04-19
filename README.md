@@ -33,19 +33,13 @@ Update to the latest:
 git submodule update --init --recursive
 ```
 
-Copy Dockerfile in the project root directory:
-
-```bash
-cp .docker/Dockerfile.sample .
-```
-
 Running the container. On the first run, it will create the database and seed it with mocked data.
 
 ```bash
 ./.docker/docker-wrapper <project-name> up --build
 ```
 
-If the database needs to be recreated for any reason, you can run each command separately. e.g.
+If the database needs to be recreated for any reason, run each command separately. e.g.
 
 ```bash
 ./.docker/docker-wrapper <project-name> mariadb 'mysql -uroot -p\"$MARIADB_ROOT_PASSWORD\"' < ./src/sql/00-create.sql
