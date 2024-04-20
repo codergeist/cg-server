@@ -33,7 +33,7 @@ services:
   nodejs:
     image: node:20.11.1
     restart: no
-#    build: ../
+    build: ../
     ports:
       - ${NODE_PORT}:${NODE_PORT}
     depends_on:
