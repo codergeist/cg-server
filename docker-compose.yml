@@ -5,48 +5,43 @@ volumes:
     driver: local
 
 services:
-  mariadb:
-    image: mariadb:10.6.17-focal
-    restart: 'no'
-    command: --default-authentication-plugin=mysql_native_password
+  postgres:
+    image: postgres:16.2
+    restart: no
+    shm_size: 128mb
+    ports:
+      - ${DB_PORT}:5432
     volumes:
-      - ./db-data:/var/lib/mysql
+      - ./db-data:/var/lib/postgresql/data
       - ./../src/sql:/docker-entrypoint-initdb.d
-    ports:
-      - ${MARIADB_PORT}:${MARIADB_PORT}
     environment:
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-    expose:
-      - ${MARIADB_PORT}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/postgres/
 
-  phpmyadmin:
-    image: phpmyadmin:5.2.1-apache
-    restart: always
+  adminer:
+    image: adminer:4.8.1
+    restart: no
     ports:
-      - ${MARIADB_ADMIN_PORT}:80
+      - ${DB_ADMIN_PORT}:8080
     environment:
-      - PMA_HOST=mariadb
-      - PMA_PORT=${MARIADB_PORT}
-      - PMA_USER=${MARIADB_USER}
-      - PMA_PASSWORD=${MARIADB_PASSWORD}
+      ADMINER_DEFAULT_SERVER: postgres
     depends_on:
-      - mariadb
+      - postgres
 
   nodejs:
     image: node:20.11.1
-    restart: 'no'
-    build: ../
+    restart: no
+#    build: ../
     ports:
       - ${NODE_PORT}:${NODE_PORT}
     depends_on:
-      - mariadb
+      - postgres
 
   nginx:
     image: nginx:1.24.0-alpine
-    restart: 'no'
+    restart: no
     ports:
       - 80:80
       - 443:443
