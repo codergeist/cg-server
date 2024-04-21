@@ -42,7 +42,7 @@ Running the container. On the first run, it will create the database and seed it
 If the database needs to be recreated for any reason, run each command separately. e.g.
 
 ```bash
-./.docker/docker-wrapper <project-name> mariadb 'mysql -uroot -p\"$MARIADB_ROOT_PASSWORD\"' < ./src/sql/00-create.sql
+./.docker/docker-wrapper <project-name> postgres 'psql -U ${DB_USER}' < ./src/sql/00-create.sql
 ```
 
 ## Default database
@@ -50,8 +50,10 @@ If the database needs to be recreated for any reason, run each command separatel
 You can change the environment variables in the project's `.env` file. The default values are:
 
 ```bash
-MARIADB_DATABASE=project
-MARIADB_USER=project
-MARIADB_PASSWORD=secret
-MARIADB_ROOT_PASSWORD=secret
+DB_PORT=3306
+DB_ADMIN_PORT=8888
+DB_NAME=project
+DB_USER=project
+DB_PASSWORD=secret
+NODE_PORT=8080
 ```
