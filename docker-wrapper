@@ -69,7 +69,8 @@ dockerCommand=( "exec" "-T" "${serviceName}" "sh" "-c" "exec ${shCommand}" )
 
 # ...unless one (and only one) of these keywords are used after the project name
 case "${serviceName}" in
-  up) dockerCommand=( "up" "--build" "--detach" );;
+  build) dockerCommand=( "up" "--build" "--detach" );;
+  up) dockerCommand=( "up" "--detach" );;
   down) dockerCommand=( "down" "--volumes" );;
   ps) dockerCommand=( "ps" "--all" );;
 esac
