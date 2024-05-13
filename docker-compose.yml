@@ -6,6 +6,7 @@ volumes:
 
 services:
   postgres:
+    container_name: ${APP_NAME}_postgres
     image: postgres:16.2
     restart: no
     shm_size: 128mb
@@ -21,6 +22,7 @@ services:
       PGDATA: /var/lib/postgresql/data/postgres/
 
   adminer:
+    container_name: ${APP_NAME}_adminer
     image: adminer:4.8.1
     restart: no
     ports:
@@ -31,6 +33,7 @@ services:
       - postgres
 
   nodejs:
+    container_name: ${APP_NAME}_nodejs
     image: node:20.11.1
     restart: no
     build: ../
@@ -40,6 +43,7 @@ services:
       - postgres
 
   nginx:
+    container_name: ${APP_NAME}_nginx
     image: nginx:1.24.0-alpine
     restart: no
     ports:
