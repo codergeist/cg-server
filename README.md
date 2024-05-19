@@ -57,3 +57,22 @@ DB_USER=project
 DB_PASSWORD=secret
 NODE_PORT=8080
 ```
+
+## Helpful scripts
+
+These are helpful scripts you can add to your package.json. Keep in mind that you need to replace `<project-name>` with yours. Also, this assumes you have two scripts to create and seed the database.
+
+```json
+{
+  "scripts": {
+    "docker:submodule": "git submodule update --init --recursive",
+    "docker:build": "./.docker/docker-wrapper <project-name> build",
+    "docker:up": "./.docker/docker-wrapper <project-name> up",
+    "docker:down": "./.docker/docker-wrapper <project-name> down",
+    "docker:ps": "./.docker/docker-wrapper <project-name> ps",
+    "docker:db:init": "npm run docker:db:create && npm run docker:db:seed",
+    "docker:db:create": "./.docker/docker-wrapper <project-name> postgres 'psql -U project' < ./src/sql/00-create.sql",
+    "docker:db:seed": "./.docker/docker-wrapper <project-name> postgres 'psql -U project' < ./src/sql/01-seed.sql"
+  }
+}
+```
