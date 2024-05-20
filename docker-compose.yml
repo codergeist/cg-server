@@ -10,7 +10,7 @@ services:
     restart: no
     shm_size: 128mb
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT:-3306}:5432
     volumes:
       - ./db-data:/var/lib/postgresql/data
       - ./../src/sql:/docker-entrypoint-initdb.d
